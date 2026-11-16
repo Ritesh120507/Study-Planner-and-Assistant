@@ -1,0 +1,35 @@
+{
+  "rules": {
+    "courses": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["createdAt", "code"]
+    },
+    "subjects": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["courseId", "createdAt", "code"]
+    },
+    "chapters": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["subjectId", "order"]
+    },
+    "flashcards": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["chapterId", "createdAt"]
+    },
+    "resources": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["chapterId", "category", "createdAt"]
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    }
+  }
+}

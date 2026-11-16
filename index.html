@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Prism — Collaborative Study Planner & Assistant</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Liquid Glass Light Yellow Theme Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23D97706%22 stroke-width=%222%22><polygon points=%2212 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2%22/></svg>">
+
+  <!-- KaTeX CSS for Mathematical Symbols, Equations & LaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+
+  <!-- Ambient Liquid Background with Floating Warm Fluid Blobs -->
+  <div class="ambient-liquid-background">
+    <div class="ambient-aura-center"></div>
+    <div class="ambient-aura-glow"></div>
+    <div class="liquid-blob liquid-blob-1"></div>
+    <div class="liquid-blob liquid-blob-2"></div>
+    <div class="liquid-blob liquid-blob-3"></div>
+    <div class="liquid-blob liquid-blob-4"></div>
+  </div>
+
+  <!-- Global Sticky Liquid Glass Header -->
+  <header class="app-header">
+    <div class="header-brand" id="brand-home-link">
+      <div class="brand-icon-wrapper">
+        <svg class="prism-icon prism-icon-lg prism-icon-gold" viewBox="0 0 24 24"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon><line x1="12" y1="22" x2="12" y2="15.5"></line><polyline points="22 8.5 12 15.5 2 8.5"></polyline></svg>
+      </div>
+      <div class="brand-text">
+        <h1>Prism Study</h1>
+        <span>Collaborative Planner &amp; Assistant</span>
+      </div>
+    </div>
+
+    <!-- Dynamic Breadcrumb Navigation -->
+    <nav class="header-nav header-breadcrumbs-nav">
+      <div class="breadcrumbs-container" id="breadcrumbs-list">
+        <span class="breadcrumb-item breadcrumb-active" data-nav="subjects">
+          <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span> Subjects
+        </span>
+      </div>
+    </nav>
+
+    <!-- User Profile, Theme Switcher & Cloud Sync Status -->
+    <div class="header-actions" id="header-actions">
+      <!-- Aura Yellow Dark Mode Switcher -->
+      <button class="btn-glass theme-toggle-btn" id="theme-toggle-btn" type="button" title="Switch to Aura Yellow Dark Mode" aria-label="Toggle dark mode">
+        <span class="theme-icon-wrap" id="theme-toggle-icon">
+          <svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </span>
+        <span class="theme-toggle-label" id="theme-toggle-text">Dark</span>
+      </button>
+
+      <div id="config-status-badge" class="sync-indicator">
+        <span class="sync-dot"></span> <span class="sync-indicator-text">Firebase Live Sync</span>
+      </div>
+
+      <div class="user-profile-chip" id="user-profile-chip" style="display: none;">
+        <img id="user-avatar-img" class="user-avatar" src="" alt="Avatar">
+        <span class="user-name" id="user-display-name">Scholar</span>
+        <button class="btn-glass" id="btn-logout" title="Sign out" style="padding: 4px 10px; font-size: 0.8rem; margin-left: 4px;">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       LOGIN VIEW (Required before access)
+       ========================================================================== -->
+  <section class="login-screen-wrapper" id="login-section">
+    <div class="login-glass-card">
+      <div class="login-brand-icon">
+        <svg class="prism-icon prism-icon-xl prism-icon-gold" viewBox="0 0 24 24"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon><line x1="12" y1="22" x2="12" y2="15.5"></line><polyline points="22 8.5 12 15.5 2 8.5"></polyline></svg>
+      </div>
+      <h2>Welcome to Prism</h2>
+      <p>
+        Your all-in-one collaborative study planner. Sign in with your Google account to access and share subjects, flashcards, notes, formula sheets, and past year question papers.
+      </p>
+
+      <button class="btn-google-login" id="btn-google-login">
+        <svg class="google-icon-svg" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        Sign in with Google Account
+      </button>
+
+      <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(217, 119, 6, 0.15); font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <span><strong>Real-time Cloud Sync</strong>: Everything uploaded or created is instantly synchronized across all students.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       MAIN APP WORKSPACE (Shown when authenticated)
+       ========================================================================== -->
+  <main class="app-container" id="main-app-content" style="display: none;">
+
+    <!-- ------------------------------------------------------------------------
+         LEVEL 1: SUBJECTS VIEW
+         ------------------------------------------------------------------------ -->
+    <section class="view-section active" id="subjects-view">
+      <!-- Hero Banner -->
+      <div class="glass-panel glass-hero-banner">
+        <div class="banner-content">
+          <h2 id="subjects-view-heading">Academic Subjects &amp; Courses</h2>
+          <p id="subjects-view-subheading">
+            Choose a subject to explore its syllabus units, flashcard decks, lecture notes, formula sheets, and past question papers.
+          </p>
+        </div>
+        <div class="banner-stats">
+          <div class="stat-pill">
+            <div class="stat-num" id="total-subjects-count">0</div>
+            <div class="stat-lbl">Subjects</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-num" id="total-courses-count">0</div>
+            <div class="stat-lbl">Branches</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course / Branch Selection Bar -->
+      <div class="glass-panel course-branch-panel">
+        <div class="course-branch-header">
+          <div class="course-branch-title-group">
+            <svg class="prism-icon prism-icon-md prism-icon-gold" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+            <span class="course-branch-label">Course / Branch:</span>
+            <span id="active-course-name-badge" class="glass-badge" style="font-size: 0.82rem;">All Courses</span>
+          </div>
+          <div class="course-branch-actions">
+            <button class="btn-glass btn-primary-glass" id="btn-add-subject-to-course" style="display: none; padding: 6px 14px; font-size: 0.82rem;" title="Add a Subject directly into this branch">
+              <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span> Add Subject to Branch
+            </button>
+            <button class="btn-glass" id="btn-edit-active-course" style="display: none; padding: 6px 14px; font-size: 0.82rem;" title="Edit Course / Branch">
+              <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></span> Edit Course
+            </button>
+            <button class="btn-glass" id="btn-delete-active-course" style="display: none; padding: 6px 14px; font-size: 0.82rem; color: #DC2626;" title="Remove Course / Branch">
+              <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></span> Remove Course
+            </button>
+            <button class="btn-glass btn-primary-glass" id="btn-open-add-course" type="button" onclick="window.prismUI ? window.prismUI.openAddCourseModal() : null" style="padding: 6px 16px; font-size: 0.85rem;">
+              <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span> Add Course / Branch
+            </button>
+          </div>
+        </div>
+        <div class="course-pills-scroll" id="course-pills-container">
+          <!-- Populated dynamically: All Courses, CSE, MECH, etc. -->
+        </div>
+      </div>
+
+      <!-- Action Controls -->
+      <div class="action-controls-bar">
+        <div class="search-filter-box">
+          <span class="search-icon"><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
+          <input type="text" id="search-subjects-input" class="glass-input" placeholder="Search subjects by name or code...">
+        </div>
+        <button class="btn-glass btn-primary-glass" id="btn-open-add-subject">
+          <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span> Add New Subject
+        </button>
+      </div>
+
+      <!-- Subjects Grid -->
+      <div class="subjects-grid" id="subjects-grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------------
+         LEVEL 2: CHAPTERS / UNITS VIEW
+         ------------------------------------------------------------------------ -->
+    <section class="view-section" id="chapters-view">
+      <div class="glass-panel glass-hero-banner">
+        <div class="banner-content">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+            <button class="btn-glass" id="btn-back-to-subjects" style="padding: 6px 14px; font-size: 0.85rem;">
+              <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></span> All Subjects
+            </button>
+            <span class="glass-badge" id="chapter-view-subject-code">CODE</span>
+          </div>
+          <h2 id="chapter-view-subject-title">Subject Name</h2>
+          <p id="chapter-view-subject-desc">Subject syllabus units and chapters.</p>
+        </div>
+        <div class="banner-stats">
+          <div class="stat-pill">
+            <div class="stat-num" id="chapter-count-stat">0</div>
+            <div class="stat-lbl">Units</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-controls-bar">
+        <p style="font-weight: 600; color: var(--text-secondary);">
+          Select a chapter or unit to access Flashcards, Notes, Short Notes, PYQs, and Revision materials.
+        </p>
+        <button class="btn-glass btn-primary-glass" id="btn-open-add-chapter">
+          <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span> Add Unit / Chapter
+        </button>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div class="chapters-grid" id="chapters-grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------------
+         LEVEL 3: CHAPTER TILES HUB (The 5 Tiles)
+         ------------------------------------------------------------------------ -->
+    <section class="view-section" id="tiles-view">
+      <div class="chapter-hero-banner">
+        <div class="chapter-hero-header">
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+              <button class="btn-glass" id="btn-back-to-chapters" style="padding: 6px 14px; font-size: 0.85rem;">
+                <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></span> Back to Chapters
+              </button>
+              <span class="glass-badge" id="tiles-view-chapter-badge">Unit 1</span>
+            </div>
+            <h2 id="tiles-view-chapter-title" style="font-size: 2rem; font-weight: 800; color: var(--text-main);">
+              Chapter Title
+            </h2>
+            <p id="tiles-view-chapter-desc" style="color: var(--text-secondary); margin-top: 6px;">
+              Select one of the 5 study resource hubs below.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- The 5 Liquid Glass Tiles -->
+      <div class="tiles-grid-5" id="chapter-tiles-container">
+        <!-- Tile 1: Flashcards -->
+        <div class="glass-card resource-tile tile-flashcards" data-category="flashcards">
+          <div class="resource-tile-icon-wrap">
+            <svg class="prism-icon prism-icon-xl prism-icon-gold" viewBox="0 0 24 24"><rect x="2" y="5" width="14" height="15" rx="3"></rect><path d="M7 2h11a3 3 0 0 1 3 3v11" stroke-dasharray="2 2"></path></svg>
+          </div>
+          <h3 class="tile-title">Flashcards</h3>
+          <p class="tile-subtitle">Interactive 3D flip card decks for active recall &amp; memory tests.</p>
+          <span class="tile-counter">Interactive Deck</span>
+        </div>
+
+        <!-- Tile 2: Notes -->
+        <div class="glass-card resource-tile tile-notes" data-category="notes">
+          <div class="resource-tile-icon-wrap">
+            <svg class="prism-icon prism-icon-xl prism-icon-gold" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          </div>
+          <h3 class="tile-title">Notes</h3>
+          <p class="tile-subtitle">Comprehensive lecture notes, detailed theory &amp; reference PDFs.</p>
+          <span class="tile-counter">View &amp; Upload</span>
+        </div>
+
+        <!-- Tile 3: Short Notes -->
+        <div class="glass-card resource-tile tile-short-notes" data-category="short_notes">
+          <div class="resource-tile-icon-wrap">
+            <svg class="prism-icon prism-icon-xl prism-icon-gold" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          </div>
+          <h3 class="tile-title">Short Notes</h3>
+          <p class="tile-subtitle">Formula cheat-sheets, mind maps &amp; concise exam summaries.</p>
+          <span class="tile-counter">View &amp; Upload</span>
+        </div>
+
+        <!-- Tile 4: PYQs -->
+        <div class="glass-card resource-tile tile-pyqs" data-category="pyqs">
+          <div class="resource-tile-icon-wrap">
+            <svg class="prism-icon prism-icon-xl prism-icon-gold" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          </div>
+          <h3 class="tile-title">PYQs</h3>
+          <p class="tile-subtitle">Previous Year Questions, model answers &amp; question banks.</p>
+          <span class="tile-counter">View &amp; Upload</span>
+        </div>
+
+        <!-- Tile 5: Revision Notes -->
+        <div class="glass-card resource-tile tile-revision" data-category="revision_notes">
+          <div class="resource-tile-icon-wrap">
+            <svg class="prism-icon prism-icon-xl prism-icon-gold" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path></svg>
+          </div>
+          <h3 class="tile-title">Revision Notes</h3>
+          <p class="tile-subtitle">High-yield revision packets for last-minute exam prep.</p>
+          <span class="tile-counter">View &amp; Upload</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------------
+         LEVEL 4A: FLASHCARDS STUDIO VIEW (3D Interactive Flip Deck)
+         ------------------------------------------------------------------------ -->
+    <section class="view-section" id="flashcards-view">
+      <div class="active-resource-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <button class="btn-glass" id="btn-back-to-tiles-from-fc">
+            <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></span> Back to Hubs
+          </button>
+          <div>
+            <h2 id="flashcards-view-title" style="font-size: 1.6rem; font-weight: 800;">Flashcards Deck</h2>
+            <span class="glass-badge" id="flashcards-view-badge">0 Cards</span>
+          </div>
+        </div>
+        <button class="btn-glass btn-primary-glass" id="btn-open-add-flashcard">
+          <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span> Add Flashcard
+        </button>
+      </div>
+
+      <!-- 3D Interactive Flip Card Stage -->
+      <div class="flashcards-container">
+        <div class="flashcard-stage" id="flashcard-stage" title="Click anywhere on card or press Spacebar to flip!">
+          <div class="flashcard-inner" id="flashcard-inner">
+            <!-- Front Face: Question -->
+            <div class="flashcard-face flashcard-front">
+              <div class="flashcard-top-tag">
+                <span>QUESTION</span>
+                <span id="flashcard-creator-tag">COMMUNITY</span>
+              </div>
+              <div class="flashcard-center-text" id="flashcard-question-text">
+                Loading flashcard question...
+              </div>
+              <div>
+                <div class="flashcard-hint" id="flashcard-hint-text"></div>
+                <div class="flashcard-prompt-flip" style="margin-top: 14px;">
+                  <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Click card or press [Space] to reveal answer</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Back Face: Answer -->
+            <div class="flashcard-face flashcard-back">
+              <div class="flashcard-top-tag">
+                <span style="color: #15803D;">ANSWER &amp; EXPLANATION</span>
+                <span>PRISM DECK</span>
+              </div>
+              <div class="flashcard-center-text" id="flashcard-answer-text">
+                Flashcard answer will appear here.
+              </div>
+              <div class="flashcard-prompt-flip">
+                <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Click again to flip back</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deck Controls -->
+        <div class="flashcard-deck-controls">
+          <button class="btn-glass btn-icon" id="btn-prev-card" title="Previous card (Left Arrow)">◀</button>
+          <div class="deck-counter-badge" id="deck-counter">0 / 0</div>
+          <button class="btn-glass btn-icon" id="btn-next-card" title="Next card (Right Arrow)">▶</button>
+          <button class="btn-glass" id="btn-shuffle-cards" style="margin-left: 12px;">
+            <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg></span> Shuffle
+          </button>
+        </div>
+      </div>
+
+      <!-- All Cards in this Deck Section -->
+      <div class="flashcards-list-section">
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">Cards in this Deck</h3>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px;">
+          All flashcards created by you and fellow students for this unit:
+        </p>
+        <div class="flashcards-grid" id="flashcards-list-grid">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------------
+         LEVEL 4B: DOCUMENTS VIEW (Notes, Short Notes, PYQs, Revision Notes)
+         ------------------------------------------------------------------------ -->
+    <section class="view-section" id="documents-view">
+      <div class="active-resource-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <button class="btn-glass" id="btn-back-to-tiles-from-docs">
+            <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></span> Back to Hubs
+          </button>
+          <div>
+            <h2 id="documents-view-title" style="font-size: 1.6rem; font-weight: 800;">Documents</h2>
+            <p id="documents-view-desc" style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;"></p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="glass-badge" id="documents-view-badge">0 Files</span>
+          <button class="btn-glass btn-primary-glass" id="btn-open-upload-doc">
+            <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></span> <span id="btn-upload-doc-label">Upload Document</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Documents Grid -->
+      <div class="documents-container">
+        <div class="documents-grid" id="documents-grid">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       MODALS & DIALOGS
+       ========================================================================== -->
+
+  <!-- Modal: Add Course / Branch -->
+  <div class="modal-backdrop" id="modal-add-course">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3>Add New Course / Branch</h3>
+        <button class="modal-close-btn" data-close-modal="modal-add-course" title="Close"><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+      <form id="form-add-course">
+        <div class="form-group">
+          <label for="course-input-name">Course / Branch Name *</label>
+          <input type="text" id="course-input-name" class="glass-input" placeholder="e.g. Computer Science, Mechanical Engineering" required>
+        </div>
+        <div class="form-group">
+          <label for="course-input-code">Branch Code / Acronym *</label>
+          <input type="text" id="course-input-code" class="glass-input" placeholder="e.g. CSE, MECH, ECE, MED" required>
+        </div>
+        <div class="form-group">
+          <label for="course-input-icon">Branch Theme / Discipline</label>
+          <select id="course-input-icon" class="glass-select">
+            <option value="code">Computer Science / Technology</option>
+            <option value="math">Applied Sciences / Mathematics</option>
+            <option value="gear">Mechanical / Manufacturing</option>
+            <option value="zap">Electrical &amp; Electronics</option>
+            <option value="course">Civil &amp; Infrastructure</option>
+            <option value="notes">Medical &amp; Health Sciences</option>
+            <option value="course">Business &amp; Management</option>
+            <option value="course">Law &amp; Governance</option>
+            <option value="cap">General Studies / Humanities</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="course-input-desc">Description</label>
+          <textarea id="course-input-desc" class="glass-textarea" rows="2" placeholder="Brief description of this academic branch or degree..."></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+          <button type="button" class="btn-glass" data-close-modal="modal-add-course">Cancel</button>
+          <button type="submit" class="btn-glass btn-primary-glass" id="btn-submit-add-course"><span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span> Add Course</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Edit Course / Branch -->
+  <div class="modal-backdrop" id="modal-edit-course">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3>Edit Course / Branch</h3>
+        <button class="modal-close-btn" data-close-modal="modal-edit-course" title="Close"><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+      <form id="form-edit-course">
+        <input type="hidden" id="edit-course-id">
+        <div class="form-group">
+          <label for="edit-course-name">Course / Branch Name *</label>
+          <input type="text" id="edit-course-name" class="glass-input" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-course-code">Branch Code / Acronym *</label>
+          <input type="text" id="edit-course-code" class="glass-input" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-course-icon">Branch Theme / Discipline</label>
+          <select id="edit-course-icon" class="glass-select">
+            <option value="code">Computer Science / Technology</option>
+            <option value="math">Applied Sciences / Mathematics</option>
+            <option value="gear">Mechanical / Manufacturing</option>
+            <option value="zap">Electrical &amp; Electronics</option>
+            <option value="course">Civil &amp; Infrastructure</option>
+            <option value="notes">Medical &amp; Health Sciences</option>
+            <option value="course">Business &amp; Management</option>
+            <option value="course">Law &amp; Governance</option>
+            <option value="cap">General Studies / Humanities</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-course-desc">Description</label>
+          <textarea id="edit-course-desc" class="glass-textarea" rows="2"></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+          <button type="button" class="btn-glass" data-close-modal="modal-edit-course">Cancel</button>
+          <button type="submit" class="btn-glass btn-primary-glass">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add Subject -->
+  <div class="modal-backdrop" id="modal-add-subject">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3>Add New Subject</h3>
+        <button class="modal-close-btn" data-close-modal="modal-add-subject" title="Close"><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+      <form id="form-add-subject">
+        <div class="form-group">
+          <label for="sub-input-course">Course / Academic Branch *</label>
+          <select id="sub-input-course" class="glass-select" required>
+            <!-- Populated dynamically with courses -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="sub-input-name">Subject Name *</label>
+          <input type="text" id="sub-input-name" class="glass-input" placeholder="e.g. Engineering Mathematics, Organic Chemistry" required>
+        </div>
+        <div class="form-group">
+          <label for="sub-input-code">Subject Code / Tag</label>
+          <input type="text" id="sub-input-code" class="glass-input" placeholder="e.g. MATH101, CS202">
+        </div>
+        <div class="form-group">
+          <label for="sub-input-icon">Subject Discipline</label>
+          <select id="sub-input-icon" class="glass-select">
+            <option value="math">Mathematics / Calculus</option>
+            <option value="zap">Physics / Electronics</option>
+            <option value="notes">Chemistry / Biology</option>
+            <option value="code">Computer Science / Coding</option>
+            <option value="notes">Economics / Statistics</option>
+            <option value="gear">Mechanical / Systems</option>
+            <option value="course">Law / Ethics</option>
+            <option value="book">General Studies</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="sub-input-desc">Description / Scope</label>
+          <textarea id="sub-input-desc" class="glass-textarea" rows="3" placeholder="Brief overview of what is covered in this subject..."></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+          <button type="button" class="btn-glass" data-close-modal="modal-add-subject">Cancel</button>
+          <button type="submit" class="btn-glass btn-primary-glass">Save &amp; Share Subject</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Edit Subject -->
+  <div class="modal-backdrop" id="modal-edit-subject">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3>Edit Subject</h3>
+        <button class="modal-close-btn" data-close-modal="modal-edit-subject" title="Close"><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+      <form id="form-edit-subject">
+        <input type="hidden" id="edit-sub-id">
+        <div class="form-group">
+          <label for="edit-sub-course">Course / Academic Branch *</label>
+          <select id="edit-sub-course" class="glass-select" required>
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-sub-name">Subject Name *</label>
+          <input type="text" id="edit-sub-name" class="glass-input" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-sub-code">Subject Code / Tag</label>
+          <input type="text" id="edit-sub-code" class="glass-input">
+        </div>
+        <div class="form-group">
+          <label for="edit-sub-icon">Subject Discipline</label>
+          <select id="edit-sub-icon" class="glass-select">
+            <option value="math">Mathematics / Calculus</option>
+            <option value="zap">Physics / Electronics</option>
+            <option value="notes">Chemistry / Biology</option>
+            <option value="code">Computer Science / Coding</option>
+            <option value="notes">Economics / Statistics</option>
+            <option value="gear">Mechanical / Systems</option>
+            <option value="course">Law / Ethics</option>
+            <option value="book">General Studies</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-sub-desc">Description / Scope</label>
+          <textarea id="edit-sub-desc" class="glass-textarea" rows="3"></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+          <button type="button" class="btn-glass" data-close-modal="modal-edit-subject">Cancel</button>
+          <button type="submit" class="btn-glass btn-primary-glass">Update Subject</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add Chapter -->
+  <div class="modal-backdrop" id="modal-add-chapter">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3>Add New Unit or Chapter</h3>
+        <button class="modal-close-btn" data-close-modal="modal-add-chapter" title="Close"><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+      <form id="form-add-chapter">
+        <div class="form-group">
+          <label for="chap-input-subject">Target Subject *</label>
+          <select id="chap-input-subject" class="glass-select" required>
+            <!-- Populated dynamically with available subjects -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="chap-input-unit">Unit / Chapter Identifier *</label>
+          <input type="text" id="chap-input-unit" class="glass-input" placeholder="e.g. Unit 1, Chapter 3, Module A" value="Unit 1" required>
+        </div>
+        <div class="form-group">
+          <label for="chap-input-title">Chapter / Unit Title *</label>
+          <input type="text" id="chap-input-title" class="glass-input" placeholder="e.g. Differential Equations, Wave Optics" required>
+        </div>
+        <div class="form-group">
+          <label for="chap-input-desc">Summary &amp; Topics Covered</label>
+          <textarea id="chap-input-desc" class="glass-textarea" rows="3" placeholder="Key topics, syllabus points, and concepts included..."></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+          <button type="button" class="btn-glass" data-close-modal="modal-add-chapter">Cancel</button>
+          <button type="submit" class="btn-glass btn-primary-glass" id="btn-submit-add-chapter">Create Chapter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Edit Chapter -->
+  <div class="modal-backdrop" id="modal-edit-chapter">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3>Edit Unit or Chapter</h3>
+        <button class="modal-close-btn" data-close-modal="modal-edit-chapter" title="Close"><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+      <form id="form-edit-chapter">
+        <input type="hidden" id="edit-chap-id">
+        <div class="form-group">
+          <label for="edit-chap-subject">Target Subject *</label>
+          <select id="edit-chap-subject" class="glass-select" required>
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-chap-unit">Unit / Chapter Identifier *</label>
+          <input type="text" id="edit-chap-unit" class="glass-input" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-chap-title">Chapter / Unit Title *</label>
+          <input type="text" id="edit-chap-title" class="glass-input" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-chap-desc">Summary &amp; Topics Covered</label>
+          <textarea id="edit-chap-desc" class="glass-textarea" rows="3"></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+          <button type="button" class="btn-glass" data-close-modal="modal-edit-chapter">Cancel</button>
+          <button type="submit" class="btn-glass btn-primary-glass">Update Chapter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Confirmation for Deletions -->
+  <div class="modal-backdrop" id="modal-confirm-delete">
+    <div class="modal-window" style="max-width: 480px; text-align: center;">
+      <div style="margin-bottom: 12px;">
+        <svg class="prism-icon prism-icon-xl" style="stroke: #DC2626; width: 44px; height: 44px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      </div>
+      <h3 id="delete-confirm-title" style="font-size: 1.4rem; font-weight: 800; color: #DC2626; margin-bottom: 8px;">Confirm Removal</h3>
+      <p id="delete-confirm-msg" style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 24px;">
+        Are you sure you want to remove this item? This action cannot be undone.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 14px;">
+        <button type="button" class="btn-glass" data-close-modal="modal-confirm-delete">Cancel</button>
+        <button type="button" class="btn-glass" id="btn-confirm-delete-action" style="background: linear-gradient(135deg, #EF4444, #DC2626); color: #FFFFFF !important;">
+          Yes, Remove
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Flashcard -->
+  <div class="modal-backdrop" id="modal-add-flashcard">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3>Add Flashcard to Deck</h3>
+        <button class="modal-close-btn" data-close-modal="modal-add-flashcard" title="Close"><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+      <form id="form-add-flashcard">
+        <div style="background: rgba(254, 243, 199, 0.6); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.45); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 0.85rem; font-weight: 700; color: #78350F;">Target Chapter:</span>
+          <span id="fc-target-chapter-tag" class="glass-badge" style="font-size: 0.78rem;">Unit 1</span>
+        </div>
+
+        <!-- Quick Math Symbols Toolbar -->
+        <div class="math-quick-toolbar" id="fc-math-toolbar">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 0.82rem; font-weight: 800; color: #78350F; display: flex; align-items: center; gap: 4px;">
+              <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><path d="M4 19L9 5h11"></path><line x1="4" y1="12" x2="14" y2="12"></line></svg></span> Quick Math &amp; Science Symbols:
+            </span>
+            <span style="font-size: 0.74rem; color: var(--text-muted);">Click to insert at cursor</span>
+          </div>
+          <div class="math-symbol-tags-scroll">
+            <button type="button" class="math-sym-btn" data-latex="$\frac{a}{b}$" title="Fraction">a/b</button>
+            <button type="button" class="math-sym-btn" data-latex="$\sqrt{x}$" title="Square Root">√x</button>
+            <button type="button" class="math-sym-btn" data-latex="$x^{2}$" title="Power / Superscript">x²</button>
+            <button type="button" class="math-sym-btn" data-latex="$x_{i}$" title="Subscript">xᵢ</button>
+            <button type="button" class="math-sym-btn" data-latex="$\int_{a}^{b} f(x)\,dx$" title="Definite Integral">∫</button>
+            <button type="button" class="math-sym-btn" data-latex="$\sum_{i=1}^{n}$" title="Summation">∑</button>
+            <button type="button" class="math-sym-btn" data-latex="$\lim_{x \to 0}$" title="Limit">lim</button>
+            <button type="button" class="math-sym-btn" data-latex="$\frac{\partial y}{\partial x}$" title="Partial Derivative">∂y/∂x</button>
+            <button type="button" class="math-sym-btn" data-latex="$\alpha$" title="Alpha">α</button>
+            <button type="button" class="math-sym-btn" data-latex="$\beta$" title="Beta">β</button>
+            <button type="button" class="math-sym-btn" data-latex="$\theta$" title="Theta">θ</button>
+            <button type="button" class="math-sym-btn" data-latex="$\pi$" title="Pi">π</button>
+            <button type="button" class="math-sym-btn" data-latex="$\lambda$" title="Lambda">λ</button>
+            <button type="button" class="math-sym-btn" data-latex="$\omega$" title="Omega">ω</button>
+            <button type="button" class="math-sym-btn" data-latex="$\pm$" title="Plus Minus">±</button>
+            <button type="button" class="math-sym-btn" data-latex="$\infty$" title="Infinity">∞</button>
+            <button type="button" class="math-sym-btn" data-latex="$\le$" title="Less than or equal">≤</button>
+            <button type="button" class="math-sym-btn" data-latex="$\ge$" title="Greater than or equal">≥</button>
+            <button type="button" class="math-sym-btn" data-latex="$\neq$" title="Not equal">≠</button>
+            <button type="button" class="math-sym-btn" data-latex="$\approx$" title="Approximately equal">≈</button>
+            <button type="button" class="math-sym-btn" data-latex="$\Delta$" title="Delta / Discriminant">Δ</button>
+            <button type="button" class="math-sym-btn" data-latex="$\times$" title="Multiplication">×</button>
+            <button type="button" class="math-sym-btn" data-latex="$\cdot$" title="Dot product">·</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="fc-input-question">Front: Question / Concept *</label>
+          <textarea id="fc-input-question" class="glass-textarea" rows="3" placeholder="e.g. What is the quadratic formula for $ax^2 + bx + c = 0$?" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="fc-input-answer">Back: Answer / Solution *</label>
+          <textarea id="fc-input-answer" class="glass-textarea" rows="4" placeholder="e.g. $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="fc-input-hint">Hint / Memory Cue (Optional)</label>
+          <input type="text" id="fc-input-hint" class="glass-input" placeholder="e.g. Discriminant is $\Delta = b^2 - 4ac$">
+        </div>
+
+        <!-- Live Formula Preview Box -->
+        <div class="math-preview-box" id="fc-math-preview-container" style="display: none;">
+          <div style="font-size: 0.78rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+            <svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            <span>Live Formula Preview</span>
+          </div>
+          <div id="fc-math-preview-q" style="font-weight: 700; color: var(--text-main); margin-bottom: 6px;"></div>
+          <div id="fc-math-preview-a" style="color: var(--text-secondary); line-height: 1.5;"></div>
+        </div>
+
+        <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 8px; display: flex; align-items: center; gap: 4px;">
+          <svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"></path></svg>
+          <span><strong>Math Tip</strong>: Wrap formulas in <code>$ ... $</code> for inline math or <code>$$ ... $$</code> for centered equations. All LaTeX and Unicode math symbols are fully supported.</span>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+          <button type="button" class="btn-glass" data-close-modal="modal-add-flashcard">Cancel</button>
+          <button type="submit" class="btn-glass btn-primary-glass">Add to Shared Deck</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Upload Document (Notes, Short Notes, PYQs, Revision Notes) -->
+  <div class="modal-backdrop" id="modal-upload-document">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3>Upload Study Material</h3>
+        <button class="modal-close-btn" data-close-modal="modal-upload-document" title="Close"><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+      <form id="form-upload-document">
+        <div style="background: rgba(254, 243, 199, 0.6); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.45); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 0.85rem; font-weight: 700; color: #78350F;">Target Chapter:</span>
+          <span id="doc-target-chapter-tag" class="glass-badge" style="font-size: 0.78rem;">Unit 1</span>
+        </div>
+        <div class="form-group">
+          <label for="upload-doc-category">Resource Category *</label>
+          <select id="upload-doc-category" class="glass-select" required>
+            <option value="notes">Lecture Notes (Handwritten notes, class slides)</option>
+            <option value="short_notes">Short Notes (Formulas, summary sheets)</option>
+            <option value="pyqs">Previous Year Questions (PYQs &amp; Solutions)</option>
+            <option value="revision_notes">Revision Notes (Rapid review packet)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Select Document (PDF / DOC / ODT) *</label>
+          <div class="file-dropzone" id="file-dropzone">
+            <div class="file-dropzone-icon">
+              <svg class="prism-icon prism-icon-xl prism-icon-gold" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            </div>
+            <div style="font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
+              Click to browse or drop file here
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              Supports PDF, DOC, DOCX, ODT, TXT, PNG, JPG (up to 25MB)
+            </div>
+            <input type="file" id="doc-file-input" style="display: none;" accept=".pdf,.doc,.docx,.odt,.txt,.png,.jpg,.jpeg">
+          </div>
+
+          <!-- Selected file preview -->
+          <div id="selected-file-preview" class="selected-file-preview" style="display: none;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <svg class="prism-icon prism-icon-lg prism-icon-gold" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+              <div>
+                <div id="selected-file-name" style="font-weight: 700; font-size: 0.9rem;">filename.pdf</div>
+                <div id="selected-file-size" style="font-size: 0.78rem; color: var(--text-muted);">1.2 MB</div>
+              </div>
+            </div>
+            <span class="glass-badge-green" style="font-size: 0.75rem;">Ready to upload</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="upload-doc-title">Document Title</label>
+          <input type="text" id="upload-doc-title" class="glass-input" placeholder="e.g. Unit 1 Handwritten Lecture Notes">
+        </div>
+
+        <div class="form-group">
+          <label for="upload-doc-desc">Short Description (Optional)</label>
+          <textarea id="upload-doc-desc" class="glass-textarea" rows="2" placeholder="Brief note about the document contents..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+          <button type="button" class="btn-glass" data-close-modal="modal-upload-document">Cancel</button>
+          <button type="submit" class="btn-glass btn-primary-glass" id="btn-submit-upload-doc">
+            <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></span> Upload &amp; Share with All
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Document Preview -->
+  <div class="modal-backdrop" id="modal-doc-preview">
+    <div class="modal-window modal-window-large">
+      <div class="modal-header">
+        <h3 id="preview-doc-title">Document Preview</h3>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button class="btn-glass btn-primary-glass" id="preview-doc-download-btn" style="padding: 6px 14px; font-size: 0.85rem;">
+            <span><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></span> Download File
+          </button>
+          <button class="modal-close-btn" data-close-modal="modal-doc-preview" title="Close"><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        </div>
+      </div>
+      <div class="doc-preview-container">
+        <iframe id="preview-doc-frame" src="about:blank" title="Preview Frame"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Cloud & Supabase Storage Setup Guide -->
+  <div class="modal-backdrop" id="modal-firebase-setup">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3>Cloud &amp; Storage Setup Guide</h3>
+        <button class="modal-close-btn" data-close-modal="modal-firebase-setup" title="Close"><svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+      <div style="font-size: 0.92rem; line-height: 1.6; color: var(--text-secondary);">
+        <h4 style="color: var(--primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+          <svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+          <span>1. Supabase Document Storage (Free 1GB, No Credit Card)</span>
+        </h4>
+        <ol style="padding-left: 20px; margin-bottom: 16px;">
+          <li>Go to <a href="https://supabase.com/dashboard" target="_blank" style="color:var(--primary); font-weight:700;">supabase.com</a> and create a free project.</li>
+          <li>In Supabase Dashboard &rarr; <strong>Storage</strong> &rarr; click <strong>New bucket</strong>.</li>
+          <li>Name it <code>study-materials</code> and turn <strong>ON "Public bucket"</strong>.</li>
+          <li>Go to <strong>Project Settings</strong> &rarr; <strong>API</strong>, copy your <strong>Project URL</strong> and <strong>anon key</strong>.</li>
+          <li>Paste them into <code>js/supabase-config.js</code>.</li>
+        </ol>
+
+        <h4 style="color: var(--primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+          <svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          <span>2. Firebase Database &amp; Google Auth</span>
+        </h4>
+        <ol style="padding-left: 20px; margin-bottom: 16px;">
+          <li>Open <code>js/firebase-config.js</code> and verify your <code>firebaseConfig</code> credentials.</li>
+          <li>In Firebase Console &rarr; <strong>Authentication</strong> &rarr; <strong>Sign-in method</strong>, enable <strong>Google</strong>.</li>
+          <li>In Firebase Console &rarr; <strong>Firestore Database</strong> &rarr; <strong>Rules</strong>, paste the rules from <code>firestore.rules</code> and click <strong>Publish</strong>.</li>
+        </ol>
+
+        <p style="background: rgba(254, 243, 199, 0.6); padding: 10px 14px; border-radius: 12px; font-size: 0.85rem; border: 1px solid rgba(251, 191, 36, 0.5); display: flex; align-items: center; gap: 6px;">
+          <svg class="prism-icon prism-icon-sm" viewBox="0 0 24 24"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"></path></svg>
+          <span><em>Prism has full built-in Base64 fallback, so uploading and downloading documents works immediately even before entering Supabase keys!</em></span>
+        </p>
+      </div>
+      <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+        <button class="btn-glass btn-primary-glass" data-close-modal="modal-firebase-setup">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Toast Notifications Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- KaTeX & Auto-Render Extension for Math Equations & Symbols -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Application Entry Point (Modular JS) -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

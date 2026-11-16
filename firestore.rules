@@ -1,0 +1,58 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is signed in
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to verify the user owns the resource or is modifying allowed fields
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Courses / Branches collection (Shared across all logged-in students)
+    match /courses/{courseId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated();
+    }
+
+    // Subjects collection (Shared across all logged-in students)
+    match /subjects/{subjectId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated();
+      
+      // Chapters subcollection inside subject
+      match /chapters/{chapterId} {
+        allow read: if isAuthenticated();
+        allow create, update, delete: if isAuthenticated();
+      }
+    }
+
+    // Global collection for Chapters
+    match /chapters/{chapterId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated();
+    }
+
+    // Flashcards collection (Shared across all students)
+    match /flashcards/{cardId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated();
+    }
+
+    // Study Documents & Resources collection (Notes, Short Notes, PYQs, Revision Notes)
+    match /resources/{resourceId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated();
+    }
+
+    // User profiles (optional user metadata)
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
+    }
+  }
+}
